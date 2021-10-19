@@ -5,7 +5,7 @@ import opgave.OptimizableTree;
 import java.util.Iterator;
 import java.util.List;
 
-public class OptimalTree implements OptimizableTree {
+public class OptimalTree<E> implements OptimizableTree {
 
 
     @Override

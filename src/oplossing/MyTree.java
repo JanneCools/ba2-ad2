@@ -5,7 +5,7 @@ import opgave.SearchTree;
 
 import java.util.Iterator;
 
-public class MyTree implements SearchTree {
+public class MyTree<E> implements SearchTree {
 
     @Override
     public int size() {

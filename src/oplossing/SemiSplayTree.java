@@ -1,5 +1,6 @@
 package oplossing;
 
+import jdk.swing.interop.SwingInterOpUtils;
 import opgave.Node;
 import opgave.SearchTree;
 import opgave.samplers.Sampler;
@@ -46,10 +47,22 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree {
     private Node<E> findGreatestChild(Node<E> e) {
         Node<E> child = e.getLeft();
         if (child == null) {
-            return null;
+            return findSmallestChild(e);
         }
         while (child.getRight() != null) {
             child = child.getRight();
+        }
+        return child;
+    }
+
+    // Hierbij wordt de kleinste sleutel uit de rechterdeelboom gezocht (enkel als de node geen linkerdeelboom bevat).
+    private Node<E> findSmallestChild(Node<E> e) {
+        Node<E> child = e.getRight();
+        if (child == null) {
+            return null;
+        }
+        while (child.getLeft() != null) {
+            child = child.getLeft();
         }
         return child;
     }
@@ -180,16 +193,36 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree {
         NodeSearcher<E> s = searchNode(e, false);
         if (s.found) {
             Node<E> parent = parents.get(s.node);
-            Node<E> lastNodeOfPath = findGreatestChild(s.node); //Te gebruiken voor semi-splay
-            if (lastNodeOfPath != null) {
-                if (s.node.getValue().compareTo(parent.getValue()) < 0) {
-                    parent.setLeft(lastNodeOfPath);
-                } else {
-                    parent.setRight(lastNodeOfPath);
-                }
-                parents.put(lastNodeOfPath, parent);
+            Node<E> greatestChild = findGreatestChild(s.node);
+            Node<E> lastNodeOfPath = parents.get(greatestChild); //Te gebruiken voor semi-splay
+            if (lastNodeOfPath.equals(s.node)) {
+                lastNodeOfPath = greatestChild;
+            }
+            if (s.node.equals(root)) {
+                root = greatestChild;
+                parents.replace(greatestChild, null);
             } else {
-                lastNodeOfPath = parent;
+                if (greatestChild != null) {
+                    if (s.node.getValue().compareTo(parent.getValue()) < 0) {
+                        parent.setLeft(greatestChild);
+                    } else {
+                        parent.setRight(greatestChild);
+                    }
+                    parents.replace(greatestChild, parent);
+                } else {
+                    greatestChild = parent;
+                }
+            }
+
+            // De top die de verwijderde top vervangt ("greatestChild") krijgt de kinderen van de verwijderde top
+            // en de ouder deze kinderen wordt vervangen in de hashmap "parents"
+            if (! s.node.getLeft().equals(greatestChild)) {
+                greatestChild.setLeft(s.node.getLeft());
+                parents.replace(s.node.getLeft(), greatestChild);
+            }
+            if (! s.node.getRight().equals(greatestChild)) {
+                greatestChild.setRight(s.node.getRight());
+                parents.replace(s.node.getRight(), greatestChild);
             }
             parents.remove(s.node);
             semiSplay(lastNodeOfPath);
@@ -205,21 +238,6 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree {
     @Override
     public Iterator iterator() {
         return null;
-    }
-
-
-    public static void main(String[] args) {
-        long start = System.currentTimeMillis();
-        SemiSplayTree<Integer> tree = new SemiSplayTree<>();
-        Sampler sampler = new Sampler(new Random(), 1000000);
-        for (Integer integer: sampler.getElements()) {
-            tree.add(integer);
-        }
-        System.out.println(tree.root.getValue());
-        System.out.println(tree.root.getRight().getValue());
-        System.out.println(tree.root.getLeft().getValue());
-        long end = System.currentTimeMillis();
-        System.out.println(end - start + " ms");
     }
 }
 
