@@ -34,6 +34,15 @@ public class Node<E extends Comparable<E>> {
     }
 
     /**
+     * Sets the value included in this node
+     *
+     * @param value the new value to be used as key for this node
+     */
+    public void setValue(E value) {
+        this.value = value;
+    }
+
+    /**
      * Sets the given node as left child of this node, replacing the left
      * subtree of this node.
      *
