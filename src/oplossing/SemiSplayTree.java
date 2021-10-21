@@ -211,6 +211,7 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree {
             } else if (greatestChild == null) {
                 Node<E> child = smallestChild.getRight();
                 Node<E> parent = parents.get(smallestChild);
+                s.node.setValue(smallestChild.getValue());
                 if (parent.equals(s.node)) {
                     parent.setRight(child);
                 } else {

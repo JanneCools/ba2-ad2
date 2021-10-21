@@ -76,6 +76,8 @@ public class SemiSplayTreeTest {
         assertEquals(55, tree.root().getRight().getRight().getValue());
         assertEquals(null, tree.root().getLeft().getRight());
         assertEquals(52, tree.root().getRight().getLeft().getRight().getValue());
+        assertEquals(false, tree.search(50));
+        assertEquals(false, tree.search(61));
 
     }
 
@@ -88,6 +90,20 @@ public class SemiSplayTreeTest {
         assertEquals(12, tree.root().getLeft().getValue());
         assertEquals(null, tree.root().getRight().getLeft());
         assertEquals(50, tree.root().getRight().getValue());
+        assertEquals(false, tree.search(35));
+    }
+
+    @Test
+    public void testRemoveNodeWithoutLeftChildren() {
+        SemiSplayTree<Integer> tree = randomTree();
+
+        assertEquals(true, tree.remove(32));
+        assertEquals(35, tree.root().getValue());
+        assertEquals(null, tree.root().getLeft().getRight());
+        assertEquals(50, tree.root().getRight().getValue());
+        assertEquals(55, tree.root().getRight().getRight().getRight().getLeft().getValue());
+        assertEquals(false, tree.search(32));
+
     }
 
     @Test
