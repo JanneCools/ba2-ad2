@@ -1,7 +1,9 @@
+import opgave.Node;
 import org.junit.jupiter.api.Test;
 import oplossing.*;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,7 +37,7 @@ public class SemiSplayTreeTest {
     }
 
     @Test
-    public void testRandomTree() {
+    public SemiSplayTree<Integer> randomTree() {
         SemiSplayTree<Integer> tree = new SemiSplayTree<>();
         ArrayList<Integer> listToAdd = new ArrayList<>(List.of(55, 50, 61, 32, 54, 87, 35, 12, 52, 6));
         for (Integer integer: listToAdd) {
@@ -51,6 +53,12 @@ public class SemiSplayTreeTest {
         assertEquals(35, tree.root().getLeft().getRight().getRight().getValue());
         assertEquals(55, tree.root().getRight().getRight().getLeft().getValue());
         assertEquals(87, tree.root().getRight().getRight().getRight().getValue());
+        return tree;
+    }
+
+    @Test
+    public void testRemoveRootAnd61() {
+        SemiSplayTree<Integer> tree = randomTree();
 
         //50 verwijderen
         assertEquals(true, tree.remove(50));
@@ -68,5 +76,30 @@ public class SemiSplayTreeTest {
         assertEquals(55, tree.root().getRight().getRight().getValue());
         assertEquals(null, tree.root().getLeft().getRight());
         assertEquals(52, tree.root().getRight().getLeft().getRight().getValue());
+
+    }
+
+    @Test
+    public void removeLeaf() {
+        SemiSplayTree<Integer> tree = randomTree();
+
+        assertEquals(true, tree.remove(35));
+        assertEquals(32, tree.root().getValue());
+        assertEquals(12, tree.root().getLeft().getValue());
+        assertEquals(null, tree.root().getRight().getLeft());
+        assertEquals(50, tree.root().getRight().getValue());
+    }
+
+    @Test
+    public void testIterator() {
+        SemiSplayTree<Integer> tree = randomTree();
+        Iterator<Node<Integer>> iterator = tree.iterator();
+        ArrayList<Integer> list = new ArrayList<>(List.of(50, 12, 54, 6, 32, 52, 61, 35, 55, 87));
+        int index = 0;
+        while (iterator.hasNext()) {
+            int value = iterator.next().getValue();
+            assertEquals(list.get(index), value, value + " moet eigenlijk " + list.get(index) + " zijn");
+            index ++;
+        }
     }
 }

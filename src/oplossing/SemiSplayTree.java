@@ -1,19 +1,19 @@
 package oplossing;
 
-import jdk.swing.interop.SwingInterOpUtils;
 import opgave.Node;
 import opgave.SearchTree;
-import opgave.samplers.Sampler;
 import java.util.*;
 
 public class SemiSplayTree<E extends Comparable<E>> implements SearchTree {
 
     private Node<E> root;
     private HashMap<Node<E>, Node<E>> parents;
+    private int nodes;  //Bijhouden uit hoeveel toppen de boom bestaat
 
     public SemiSplayTree() {
         root = null;
         parents = new HashMap<>();
+        nodes = 0;
     }
 
     public static class NodeSearcher<E extends Comparable<E>> {
@@ -47,7 +47,7 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree {
     private Node<E> findGreatestChild(Node<E> e) {
         Node<E> child = e.getLeft();
         if (child == null) {
-            return findSmallestChild(e);
+            return null;
         }
         while (child.getRight() != null) {
             child = child.getRight();
@@ -162,9 +162,11 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree {
         if (root == null) {
             root = new Node<>(e);
             parents.put(root, null);
+            nodes++;
         }
         boolean present = searchNode(e, false).found;
         if (! present) {
+            nodes++;
             Node<E> parent = null;
             Node<E> node = root;
             while (node != null) {
@@ -192,40 +194,44 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree {
     public boolean remove(Comparable e) {
         NodeSearcher<E> s = searchNode(e, false);
         if (s.found) {
-            Node<E> parent = parents.get(s.node);
+            nodes--;
             Node<E> greatestChild = findGreatestChild(s.node);
-            Node<E> lastNodeOfPath = parents.get(greatestChild); //Te gebruiken voor semi-splay
-            if (lastNodeOfPath.equals(s.node)) {
-                lastNodeOfPath = greatestChild;
-            }
-            if (s.node.equals(root)) {
-                root = greatestChild;
-                parents.replace(greatestChild, null);
-            } else {
-                if (greatestChild != null) {
-                    if (s.node.getValue().compareTo(parent.getValue()) < 0) {
-                        parent.setLeft(greatestChild);
-                    } else {
-                        parent.setRight(greatestChild);
-                    }
-                    parents.replace(greatestChild, parent);
+            Node<E> smallestChild = findSmallestChild(s.node);
+            Node<E> lastNodeOfPath = parents.get(greatestChild);    //Te gebruiken voor semi-splay
+            if (greatestChild == null && smallestChild == null) {     //de te verwijderen top is een blad
+                Node<E> parent = parents.get(s.node);
+                if (s.node.equals(parent.getLeft())) {
+                    parent.setLeft(null);
                 } else {
-                    greatestChild = parent;
+                    parent.setRight(null);
                 }
+                lastNodeOfPath = parents.get(s.node);
+                parents.remove(s.node);
+            } else if (greatestChild == null) {
+                Node<E> child = smallestChild.getRight();
+                Node<E> parent = parents.get(smallestChild);
+                if (parent.equals(s.node)) {
+                    parent.setRight(child);
+                } else {
+                    parent.setLeft(child);
+                }
+                lastNodeOfPath = parents.get(smallestChild);
+                parents.remove(smallestChild);
+            } else {
+                Node<E> child = greatestChild.getLeft();
+                Node<E> parent = parents.get(greatestChild);
+                s.node.setValue(greatestChild.getValue());
+                if (parent.equals(s.node)) {
+                    parent.setLeft(child);
+                } else {
+                    parent.setRight(child);
+                }
+                parents.get(greatestChild);
+                parents.remove(greatestChild);
             }
-
-            // De top die de verwijderde top vervangt ("greatestChild") krijgt de kinderen van de verwijderde top
-            // en de ouder deze kinderen wordt vervangen in de hashmap "parents"
-            if (! s.node.getLeft().equals(greatestChild)) {
-                greatestChild.setLeft(s.node.getLeft());
-                parents.replace(s.node.getLeft(), greatestChild);
-            }
-            if (! s.node.getRight().equals(greatestChild)) {
-                greatestChild.setRight(s.node.getRight());
-                parents.replace(s.node.getRight(), greatestChild);
-            }
-            parents.remove(s.node);
             semiSplay(lastNodeOfPath);
+        } else {
+            semiSplay(s.node);
         }
         return s.found;
     }
@@ -237,7 +243,62 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree {
 
     @Override
     public Iterator iterator() {
-        return null;
+        ArrayList<Node<E>> list = new ArrayList<>();
+
+        // Ik bereken de hoogte van de boom. Stel dat het een links-complete binaire boom is,
+        // dan gebruik ik de impliciete representatie van de boom met een arraylist (zie p189 in de cursus van AD1)
+        int leftHeight = getHeight(root, "left");
+        int rightHeight = getHeight(root, "right");
+        int height = Math.max(leftHeight, rightHeight);
+
+        // Als de hoogte gelijk is aan height, dan zijn er maximaal 2^(height+1) - 1 toppen
+        // Hier zorg ik ervoor dat dit aantal plaatsen al worden gemaakt in de lijst.
+        for (int i = 0; i <= Math.pow(2, height+1)-1; i++) {
+            list.add(null);
+        }
+        list.set(1, root);
+        list = addChildren(list, root, 1);
+
+        // In het begin heb ik verondersteld dat de boom links-compleet is, maar dit is niet altijd het geval.
+        // Daarom verwijder ik alle objecten die nog null zijn.
+        list.removeIf(Objects::isNull);
+        return list.listIterator();
+    }
+
+    // Voor deze methode heb ik mij deels gebaseerd op de pseudocode op de site
+    // https://www.baeldung.com/cs/binary-tree-height
+    public int getHeight(Node<E> parent, String side) {
+        if (side.equals("left")) {
+            if (parent.getLeft() == null) {
+                return 0;
+            }
+            int leftHeight = getHeight(parent.getLeft(), "left");
+            int rightHeight = getHeight(parent.getLeft(), "right");
+            return Math.max(leftHeight, rightHeight) + 1;
+        } else {
+            if (parent.getRight() == null) {
+                return 0;
+            }
+            int leftHeight = getHeight(parent.getRight(), "left");
+            int rightHeight = getHeight(parent.getRight(), "right");
+            return Math.max(leftHeight, rightHeight) + 1;
+        }
+    }
+
+    // Hier voeg ik telkens de kinderen van de gegeven node toe aan de lijst op index "index*2" en "index*2+1",
+    // dit is gebaseerd op de impliciete representatie van een links-complete binaire boom (p189 cursus AD1)
+    private ArrayList<Node<E>> addChildren(ArrayList<Node<E>> list, Node<E> node, int index) {
+        Node<E> leftChild = node.getLeft();
+        Node<E> rightChild = node.getRight();
+        if (leftChild != null) {
+            list.set(index*2, leftChild);
+            list = addChildren(list, leftChild, index*2);
+        }
+        if (rightChild != null) {
+            list.set(index*2 + 1, rightChild);
+            list = addChildren(list, rightChild, index*2 + 1);
+        }
+        return list;
     }
 }
 
