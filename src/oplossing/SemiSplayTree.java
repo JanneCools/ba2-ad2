@@ -163,6 +163,7 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree {
             root = new Node<>(e);
             parents.put(root, null);
             nodes++;
+            return true;
         }
         boolean present = searchNode(e, false).found;
         if (! present) {
@@ -187,7 +188,7 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree {
             parents.put(node, parent);
             semiSplay(node);
         }
-        return present;
+        return ! present;
     }
 
     @Override
