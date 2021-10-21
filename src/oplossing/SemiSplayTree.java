@@ -4,16 +4,14 @@ import opgave.Node;
 import opgave.SearchTree;
 import java.util.*;
 
-public class SemiSplayTree<E extends Comparable<E>> implements SearchTree {
+public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
 
     private Node<E> root;
     private HashMap<Node<E>, Node<E>> parents;
-    private int nodes;  //Bijhouden uit hoeveel toppen de boom bestaat
 
     public SemiSplayTree() {
         root = null;
         parents = new HashMap<>();
-        nodes = 0;
     }
 
     public static class NodeSearcher<E extends Comparable<E>> {
@@ -74,12 +72,12 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree {
             //De derde top voor semi-splay zoeken en zijn ouder
             Node<E> parent2 = parents.get(parent1);
             Node<E> parent3 = null;
-            if (! parent2.equals(root)) {
+            if (! Objects.equals(parent2, root)) {
                 parent3 = parents.get(parent2);
             }
             // De 3 toppen rangschikken volgens waarde zodat je ze makkelijk in de juiste variabele kan plaatsen
             ArrayList<Node<E>> list = new ArrayList<>(List.of(node, parent1, parent2));
-            list.sort((n1,n2) -> n1.getValue().compareTo(n2.getValue()));
+            list.sort(Comparator.comparing(Node::getValue));
             Node<E> leftChild = list.get(0);
             Node<E> parent = list.get(1);
             Node<E> rightChild = list.get(2);
@@ -99,11 +97,11 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree {
             allChildren.add(rightChild.getRight());
             allChildren.removeIf(Objects::isNull);
             allChildren.removeIf(e -> e.equals(leftChild) || e.equals(parent) || e.equals(rightChild));
-            allChildren.sort((n1,n2) -> n1.getValue().compareTo(n2.getValue()));
+            allChildren.sort(Comparator.comparing(Node::getValue));
 
             // De middelste top wordt het (nieuwe) kind van parent3
             if (parent3 != null) {                          // Dit betekent dat parent2 niet de wortel is
-                if (parent2.equals(parent3.getRight())) {
+                if (Objects.equals(parent2, parent3.getRight())) {
                     parent3.setRight(parent);
                 } else {
                     parent3.setLeft(parent);
@@ -162,12 +160,10 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree {
         if (root == null) {
             root = new Node<>(e);
             parents.put(root, null);
-            nodes++;
             return true;
         }
         boolean present = searchNode(e, false).found;
         if (! present) {
-            nodes++;
             Node<E> parent = null;
             Node<E> node = root;
             while (node != null) {
@@ -195,13 +191,12 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree {
     public boolean remove(Comparable e) {
         NodeSearcher<E> s = searchNode(e, false);
         if (s.found) {
-            nodes--;
             Node<E> greatestChild = findGreatestChild(s.node);
             Node<E> smallestChild = findSmallestChild(s.node);
-            Node<E> lastNodeOfPath = parents.get(greatestChild);    //Te gebruiken voor semi-splay
-            if (greatestChild == null && smallestChild == null) {     //de te verwijderen top is een blad
+            Node<E> lastNodeOfPath = parents.get(greatestChild);      // Te gebruiken voor semi-splay
+            if (greatestChild == null && smallestChild == null) {     // De te verwijderen top is een blad
                 Node<E> parent = parents.get(s.node);
-                if (s.node.equals(parent.getLeft())) {
+                if (Objects.equals(s.node, parent.getLeft())) {
                     parent.setLeft(null);
                 } else {
                     parent.setRight(null);
@@ -212,7 +207,7 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree {
                 Node<E> child = smallestChild.getRight();
                 Node<E> parent = parents.get(smallestChild);
                 s.node.setValue(smallestChild.getValue());
-                if (parent.equals(s.node)) {
+                if (Objects.equals(parent, s.node)) {
                     parent.setRight(child);
                 } else {
                     parent.setLeft(child);
@@ -223,7 +218,7 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree {
                 Node<E> child = greatestChild.getLeft();
                 Node<E> parent = parents.get(greatestChild);
                 s.node.setValue(greatestChild.getValue());
-                if (parent.equals(s.node)) {
+                if (Objects.equals(parent, s.node)) {
                     parent.setLeft(child);
                 } else {
                     parent.setRight(child);
@@ -239,7 +234,7 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree {
     }
 
     @Override
-    public Node root() {
+    public Node<E> root() {
         return root;
     }
 
