@@ -65,35 +65,38 @@ public class OptimalTree<E extends Comparable<E>> implements OptimizableTree<E> 
         if (searcher.isFound()) {
             Node<E> node = searcher.getNode();
             Node<E> greatestChild = searcher.findGreatestChild(node);
-            Node<E> smallestChild = searcher.findSmallestChild(node);
-            if (greatestChild == null && smallestChild == null) {     // De te verwijderen top is een blad
+            if (greatestChild == null && node.getRight() == null) {     // De te verwijderen top is een blad
                 Node<E> parent = parents.get(node);
-                if (Objects.equals(node, parent.getLeft())) {
+                if (Objects.equals(node, root)) {
+                    root = null;
+                } else if (Objects.equals(node, parent.getLeft())) {
                     parent.setLeft(null);
                 } else {
                     parent.setRight(null);
                 }
                 parents.remove(node);
-            } else if (greatestChild == null) {
-                Node<E> child = smallestChild.getRight();
-                Node<E> parent = parents.get(smallestChild);
-                node.setValue(smallestChild.getValue());
-                if (Objects.equals(parent, node)) {
+            } else if (greatestChild == null) {         // De top heeft geen linkerkinderen
+                Node<E> child = node.getRight();
+                Node<E> parent = parents.get(node);
+                if (Objects.equals(root, node)) {
+                    root = child;
+                } else if (Objects.equals(parent.getRight(), node)) {
                     parent.setRight(child);
                 } else {
                     parent.setLeft(child);
                 }
-                parents.remove(smallestChild);
+                parents.replace(child, parent);
+                parents.remove(node);
             } else {
                 Node<E> child = greatestChild.getLeft();
                 Node<E> parent = parents.get(greatestChild);
                 node.setValue(greatestChild.getValue());
-                if (Objects.equals(parent, node)) {
-                    parent.setLeft(child);
-                } else {
+                if (Objects.equals(parent.getRight(), greatestChild)) {
                     parent.setRight(child);
+                } else {
+                    parent.setLeft(child);
                 }
-                parents.get(greatestChild);
+                parents.replace(child, parent);
                 parents.remove(greatestChild);
             }
         }
@@ -107,12 +110,7 @@ public class OptimalTree<E extends Comparable<E>> implements OptimizableTree<E> 
 
     @Override
     public Iterator iterator() {
-        // Ik bereken de hoogte van de boom.
-        int leftHeight = iterator.getHeight(root, "left");
-        int rightHeight = iterator.getHeight(root, "right");
-        int height = Math.max(leftHeight, rightHeight);
-
-        ArrayList<Node<E>> list = iterator.makeList(root, height);
+        ArrayList<E> list = iterator.makeList(new ArrayList<>(), root);
         return list.listIterator();
     }
 }

@@ -58,7 +58,7 @@ public class SemiSplayTreeTest {
     }
 
     @Test
-    public void testRemoveRootAnd61() {
+    public void removeRootAnd61() {
         SemiSplayTree<Integer> tree = randomTree();
 
         //50 verwijderen
@@ -95,7 +95,7 @@ public class SemiSplayTreeTest {
     }
 
     @Test
-    public void testRemoveNodeWithoutLeftChildren() {
+    public void removeNodeWithoutLeftChildren() {
         SemiSplayTree<Integer> tree = randomTree();
 
         assertEquals(true, tree.remove(32));
@@ -108,7 +108,7 @@ public class SemiSplayTreeTest {
     }
 
     @Test
-    public void testIterator() {
+    public void iterator() {
         SemiSplayTree<Integer> tree = randomTree();
         Iterator<Node<Integer>> iterator = tree.iterator();
         ArrayList<Integer> list = new ArrayList<>(List.of(50, 12, 54, 6, 32, 52, 61, 35, 55, 87));
