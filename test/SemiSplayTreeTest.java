@@ -53,6 +53,7 @@ public class SemiSplayTreeTest {
         assertEquals(35, tree.root().getLeft().getRight().getRight().getValue());
         assertEquals(55, tree.root().getRight().getRight().getLeft().getValue());
         assertEquals(87, tree.root().getRight().getRight().getRight().getValue());
+        assertEquals(10, tree.size());
         return tree;
     }
 
