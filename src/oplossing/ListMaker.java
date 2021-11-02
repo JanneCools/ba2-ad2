@@ -3,9 +3,8 @@ package oplossing;
 import opgave.Node;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
-public class IteratorFactory<E extends Comparable<E>> {
+public class ListMaker<E extends Comparable<E>> {
 
     public ArrayList<E> makeList(ArrayList<E> list, Node<E> node) {
         if (node.getLeft() != null) {

@@ -1,63 +1,23 @@
-import oplossing.OptimalTree;
+import oplossing.MyTree;
 import org.junit.jupiter.api.Test;
-
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.TreeSet;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class OptimalTreeTest {
-
-    public static void main(String[] args) {
-        OptimalTree<Integer> tree = new OptimalTree<>();
-        ArrayList<Integer> keys = new ArrayList<>(List.of(1, 2, 3, 4, 5));
-        ArrayList<Double> weights = new ArrayList<>(List.of(1.0,2.0,3.0,4.0,5.0));
-        tree.optimize(keys,weights);
-        System.out.println(tree.greatests.length + ", " + tree.greatests[0].length);
-        System.out.println(tree.root().getValue());
-        System.out.println(tree.root().getLeft().getValue());
-        System.out.println(tree.root().getRight().getValue());
-        System.out.println(tree.root().getLeft().getLeft().getValue());
-        System.out.println(tree.root().getRight().getRight().getValue());
-    }
-
-    @Test
-    public OptimalTree<Integer> randomTree() {
-        OptimalTree<Integer> tree = new OptimalTree<>();
-        ArrayList<Integer> listToAdd = new ArrayList<>(List.of(50, 12, 54, 6, 32, 52, 61, 35, 55, 87));
-        for (Integer integer: listToAdd) {
-            tree.add(integer);
-        }
-        assertEquals(50, tree.root().getValue());
-        assertEquals(12, tree.root().getLeft().getValue());
-        assertEquals(54, tree.root().getRight().getValue());
-        assertEquals(6, tree.root().getLeft().getLeft().getValue());
-        assertEquals(32, tree.root().getLeft().getRight().getValue());
-        assertEquals(52, tree.root().getRight().getLeft().getValue());
-        assertEquals(61, tree.root().getRight().getRight().getValue());
-        assertEquals(35, tree.root().getLeft().getRight().getRight().getValue());
-        assertEquals(55, tree.root().getRight().getRight().getLeft().getValue());
-        assertEquals(87, tree.root().getRight().getRight().getRight().getValue());
-        assertEquals(10, tree.size());
-        return tree;
-    }
-
-    @Test
-    public void testRemoveRoot() {
-        OptimalTree<Integer> tree = randomTree();
-        assertEquals(true, tree.remove(50));
-        assertEquals(35, tree.root().getValue());
-    }
+public class MyTreeTest {
 
     @Test
     public void empty() {
-        OptimalTree<Integer> tree = new OptimalTree<>();
+        MyTree<Integer> tree = new MyTree<>();
         assertEquals(0, tree.size());
     }
 
     @Test
     public void addOne() {
-        OptimalTree<Integer> tree = new OptimalTree<>();
+        MyTree<Integer> tree = new MyTree<>();
 
         assertFalse(tree.search(1));
         tree.add(1);
@@ -66,7 +26,7 @@ public class OptimalTreeTest {
 
     @Test
     public void addMultiple() {
-        OptimalTree<Integer> tree = new OptimalTree<>();
+        MyTree<Integer> tree = new MyTree<>();
 
         for (int i = 0; i < 10; i++) {
             assertTrue(tree.add(i));
@@ -78,7 +38,7 @@ public class OptimalTreeTest {
 
     @Test
     public void removeOne() {
-        OptimalTree<Integer> tree = new OptimalTree<>();
+        MyTree<Integer> tree = new MyTree<>();
 
         assertFalse(tree.search(1));
         tree.add(1);
@@ -90,7 +50,7 @@ public class OptimalTreeTest {
 
     @Test
     public void removeMultiple() {
-        OptimalTree<Integer> tree = new OptimalTree<>();
+        MyTree<Integer> tree = new MyTree<>();
 
         for (int i = 0; i < 10; i++) {
             assertTrue(tree.add(i), String.format("should change when adding %d", i));
@@ -108,7 +68,7 @@ public class OptimalTreeTest {
         for (int seed = 1; seed < 10000; seed *= 10) {
             TreeSet<Integer> oracle = new TreeSet<>();
             Random random = new Random(seed);
-            OptimalTree<Integer> tree = new OptimalTree<>();
+            MyTree<Integer> tree = new MyTree<>();
             for (int i = 0; i < 1000; i++) {
                 int x = random.nextInt(100);
                 boolean add = random.nextFloat() < .9;
