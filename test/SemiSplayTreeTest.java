@@ -37,23 +37,23 @@ public class SemiSplayTreeTest {
         SemiSplayTree<Integer> tree = randomTree();
 
         //50 verwijderen
-        assertEquals(true, tree.remove(50));
+        assertTrue(tree.remove(50));
         assertEquals(32, tree.root().getValue());
         assertEquals(12, tree.root().getLeft().getValue());
         assertEquals(35, tree.root().getRight().getValue());
-        assertEquals(null, tree.root().getRight().getLeft());
+        assertNull(tree.root().getRight().getLeft());
         assertEquals(54, tree.root().getRight().getRight().getValue());
 
         //61 verwijderen
-        assertEquals(true, tree.remove(61));
+        assertTrue(tree.remove(61));
         assertEquals(32, tree.root().getValue());
         assertEquals(12, tree.root().getLeft().getValue());
         assertEquals(54, tree.root().getRight().getValue());
         assertEquals(55, tree.root().getRight().getRight().getValue());
-        assertEquals(null, tree.root().getLeft().getRight());
+        assertNull(tree.root().getLeft().getRight());
         assertEquals(52, tree.root().getRight().getLeft().getRight().getValue());
-        assertEquals(false, tree.search(50));
-        assertEquals(false, tree.search(61));
+        assertFalse(tree.search(50));
+        assertFalse(tree.search(61));
 
     }
 
@@ -61,12 +61,24 @@ public class SemiSplayTreeTest {
     public void removeLeaf() {
         SemiSplayTree<Integer> tree = randomTree();
 
-        assertEquals(true, tree.remove(35));
+        assertTrue(tree.remove(35));
         assertEquals(32, tree.root().getValue());
         assertEquals(12, tree.root().getLeft().getValue());
-        assertEquals(null, tree.root().getRight().getLeft());
+        assertNull(tree.root().getRight().getLeft());
         assertEquals(50, tree.root().getRight().getValue());
-        assertEquals(false, tree.search(35));
+        assertFalse(tree.search(35));
+    }
+
+    @Test
+    public void removeNodeWithoutLeftChild() {
+        SemiSplayTree<Integer> tree = randomTree();
+
+        assertTrue(tree.remove(32));
+        assertEquals(35, tree.root().getValue());
+        assertEquals(12, tree.root().getLeft().getValue());
+        assertEquals(50, tree.root().getRight().getValue());
+        assertNull(tree.root().getLeft().getRight());
+        assertEquals(52, tree.root().getRight().getRight().getLeft().getValue());
     }
 
     @Test

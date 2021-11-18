@@ -8,6 +8,7 @@ public class NodeSearcher<E extends Comparable<E>> {
 
     private boolean found;
     private Node<E> node;
+    private int nodesVisited;
 
     public boolean isFound() {
         return found;
@@ -17,17 +18,22 @@ public class NodeSearcher<E extends Comparable<E>> {
         return node;
     }
 
+    public int getNodesVisited() {
+        return nodesVisited;
+    }
+
     /*
-         Deze methode staat in een aparte klasse omdat het door alle boom-klassen gebruikt wordt.
-         De boolean "semi_splay" zorgt ervoor dat semi-splay al dan niet al wordt uitgevoerd bij de semi-splay boom.
-         Dit is enkel het geval als een semi-splay boom deze methode oproept en hierin de methode "search" werd opgeroepen.
-         Als de gezocht top niet gevonden is, wordt de laatste top, dat bezocht is, teruggegeven
-         (dus in principe de ouder van deze top).
-        */
+             Deze methode staat in een aparte klasse omdat het door alle boom-klassen gebruikt wordt.
+             De boolean "semi_splay" zorgt ervoor dat semi-splay al dan niet al wordt uitgevoerd bij de semi-splay boom.
+             Dit is enkel het geval als een semi-splay boom deze methode oproept en hierin de methode "search" werd opgeroepen.
+             Als de gezocht top niet gevonden is, wordt de laatste top, dat bezocht is, teruggegeven
+             (dus in principe de ouder van deze top).
+            */
     public NodeSearcher<E> searchNode(Comparable e, Node<E> root, boolean semi_splay, SemiSplayTree<E> tree) {
         node = null;
         found = false;
         Node<E> child = root;
+        nodesVisited = 1;
         while (child != null && !found) {
             E value = child.getValue();
             found = e.equals(value);
@@ -37,6 +43,7 @@ public class NodeSearcher<E extends Comparable<E>> {
             } else {
                 child = child.getRight();
             }
+            nodesVisited ++;
         }
         if (semi_splay) {
             tree.semiSplay(node);
@@ -44,26 +51,32 @@ public class NodeSearcher<E extends Comparable<E>> {
         return this;
     }
 
-
-    public Node<E> findGreatestChild(Node<E> e) {
-        Node<E> child = e.getLeft();
+    // Grootste linkerkind zoeken
+    public Node<E> findGreatestChild(Node<E> node) {
+        nodesVisited = 0;
+        Node<E> child = node.getLeft();
         if (child == null) {
             return null;
         }
+        nodesVisited = 1;
         while (child.getRight() != null) {
             child = child.getRight();
+            nodesVisited ++;
         }
         return child;
     }
 
-    // Hierbij wordt de kleinste sleutel uit de rechterdeelboom gezocht (enkel als de node geen linkerdeelboom bevat).
-    public Node<E> findSmallestChild(Node<E> e) {
-        Node<E> child = e.getRight();
+    // Kleinste rechterkind zoeken
+    public Node<E> findSmallestChild(Node<E> node) {
+        nodesVisited = 0;
+        Node<E> child = node.getRight();
         if (child == null) {
             return null;
         }
+        nodesVisited = 1;
         while (child.getLeft() != null) {
             child = child.getLeft();
+            nodesVisited ++;
         }
         return child;
     }
