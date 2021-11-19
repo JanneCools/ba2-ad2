@@ -23,12 +23,12 @@ public class NodeSearcher<E extends Comparable<E>> {
     }
 
     /*
-             Deze methode staat in een aparte klasse omdat het door alle boom-klassen gebruikt wordt.
-             De boolean "semi_splay" zorgt ervoor dat semi-splay al dan niet al wordt uitgevoerd bij de semi-splay boom.
-             Dit is enkel het geval als een semi-splay boom deze methode oproept en hierin de methode "search" werd opgeroepen.
-             Als de gezocht top niet gevonden is, wordt de laatste top, dat bezocht is, teruggegeven
-             (dus in principe de ouder van deze top).
-            */
+     Deze methode staat in een aparte klasse omdat het door alle boom-klassen gebruikt wordt.
+     De boolean "semi_splay" zorgt ervoor dat semi-splay al dan niet al wordt uitgevoerd bij de semi-splay boom.
+     Dit is enkel het geval als een semi-splay boom deze methode oproept en hierin de methode "search" werd opgeroepen.
+     Als de gezocht top niet gevonden is, wordt de laatste top, dat bezocht is, teruggegeven
+     (dus in principe de ouder van deze top).
+    */
     public NodeSearcher<E> searchNode(Comparable e, Node<E> root, boolean semi_splay, SemiSplayTree<E> tree) {
         node = null;
         found = false;

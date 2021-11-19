@@ -17,14 +17,4 @@ public class ListMaker<E extends Comparable<E>> {
         }
         return list;
     }
-    public ArrayList<Node<E>> makeNodeList(ArrayList<Node<E>> list, Node<E> node) {
-        if (!Objects.equals(node.getLeft(), null)) {
-            list = makeNodeList(list, node.getLeft());
-        }
-        list.add(node);
-        if (!Objects.equals(node.getRight(), null)) {
-            list = makeNodeList(list, node.getRight());
-        }
-        return list;
-    }
 }
