@@ -75,9 +75,12 @@ public class SemiSplayBenchmarks {
         //benchmarks.searchElements(5000);
         //benchmarks.removeElements(5000);
         //benchmarks.tree = new SemiSplayTree<>();
-        benchmarks.addElements(10000);
-        benchmarks.searchElements(10000);
+        //benchmarks.addElements(10000);
+        //benchmarks.searchElements(10000);
         //benchmarks.removeElements(10000);
         //benchmarks.tree = new SemiSplayTree<>();
+        benchmarks.addElements(100000);
+        benchmarks.searchElements(100000);
+        benchmarks.removeElements(100000);
     }
 }

@@ -2,8 +2,6 @@ package oplossing;
 
 import opgave.Node;
 import opgave.OptimizableTree;
-
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class OptimalTree<E extends Comparable<E>> implements OptimizableTree<E> {
@@ -12,7 +10,6 @@ public class OptimalTree<E extends Comparable<E>> implements OptimizableTree<E> 
     private HashMap<Node<E>, Node<E>> parents;
     private final NodeSearcher<E> searcher;
     private final ListMaker<E> listMaker;
-    public Node<E>[][] greatests;
 
     public OptimalTree() {
         root = null;
@@ -21,61 +18,60 @@ public class OptimalTree<E extends Comparable<E>> implements OptimizableTree<E> 
         listMaker = new ListMaker<>();
     }
 
-    private static class Greatest<E extends Comparable<E>> {
-        public int index;
-        public E key;
-        public double weight;
-    }
-
-    private Greatest<E> findGreatest(List<E> keys, List<Double> weights) {
-        Greatest<E> greatest = new Greatest<>();
-        greatest.index = 0;
-        greatest.key = keys.get(0);
-        greatest.weight = weights.get(0);
-        for (int i = 0; i < keys.size(); i++) {
-            E key = keys.get(i);
-            double weight = weights.get(i);
-            if (weight > greatest.weight) {
-                greatest.index = i;
-                greatest.key = key;
-                greatest.weight = weight;
+    private void restructure(List<E> keys, int[][] roots, int start, int stop, Node<E> parent) {
+        int index = roots[start][stop];
+        if (Objects.equals(parent, null)) {
+            root = new Node<>(keys.get(index-1));
+            parents.put(root, null);
+            restructure(keys, roots, start, index-1, root);
+            restructure(keys, roots, index, stop, root);
+        } else if (start != stop) {
+            Node<E> node = new Node<>(keys.get(index-1));
+            if (node.getValue().compareTo(parent.getValue()) < 0) {
+                parent.setLeft(node);
+            } else {
+                parent.setRight(node);
             }
+            parents.put(node, parent);
+            restructure(keys, roots, start, index-1, node);
+            restructure(keys, roots, index, stop, node);
         }
-        return greatest;
     }
 
+    // Voor deze methode (en de methode "restructure") heb ik het filmpje gebruikt op de link:
+    // https://www.youtube.com/watch?v=vLS-zRCHo-Y&list=PLPKF_TcxpTJ40Ez42V8DIqm9lECUhb7MB&index=2&t=1264s
     @Override
     public void optimize(List<E> keys, List<Double> weights) {
-        Greatest<E> greatest = findGreatest(keys, weights);
-        //double[][] treeWeights = new double[keys.size()][keys.size()];
-        greatests = new Node[keys.size()][keys.size()];
-        for (int i = 0; i < keys.size(); i++) {
-            for (int j = 0; j < keys.size(); j++) {
-                if (keys.get(i).compareTo(keys.get(j)) <= 0) {
-                    Greatest<E> greatest1 = findGreatest(keys.subList(i,j+1), weights.subList(i,j+1));
-                    greatests[i][j] = new Node<>(greatest1.key);
+        int amount = keys.size();
+        double[][] costs = new double[amount+1][amount+1];
+        int[][] roots = new int[amount+1][amount+1];
+        for (int i = 0; i <= amount; i++) {
+            costs[i][i] = 0;
+        }
+        for (int length = 2; length <= amount+1; length++) {
+            for (int start = 0; start <= amount+1-length; start++) {
+                int stop = start + length - 1;
+                double weight = 0.0;
+                for (int i = start+1; i <= stop; i++) {
+                    if (i != 0) {
+                        weight += weights.get(i-1);
+                    }
                 }
+                double minWeight = costs[0][start] + costs[start+1][stop] + weight;
+                roots[start][stop] = start+1;
+                for (int index = start+1; index <= stop; index++) {
+                    double tempWeight = costs[start][index-1] + costs[index][stop] + weight;
+                    if (tempWeight < minWeight) {
+                        minWeight = tempWeight;
+                        roots[start][stop] = index;
+                    }
+                }
+                costs[start][stop] = minWeight;
             }
         }
+        root = null;
         parents = new HashMap<>();
-        root = new Node<>(greatest.key);
-        createNewTree(0, keys.size()-1, greatest.index, root, keys);
-    }
-
-    private void createNewTree(int start, int stop, int indexRoot, Node<E> root, List<E> keys) {
-        if (start >= 0 && start < keys.size() && stop >= 0 && stop < keys.size() && indexRoot > 0
-                && indexRoot < keys.size() - 1) {
-            Node<E> left = greatests[start][indexRoot-1];
-            Node<E> right = greatests[indexRoot+1][stop];
-            if (! Objects.equals(left, null)) {
-                root.setLeft(left);
-                createNewTree(start, indexRoot-1, keys.indexOf(left.getValue()), left, keys);
-            }
-            if (! Objects.equals(right, null)) {
-                root.setRight(right);
-                createNewTree(indexRoot+1, stop, keys.indexOf(right.getValue()), right, keys);
-            }
-        }
+        restructure(keys, roots, 0, amount, null);
     }
 
     @Override

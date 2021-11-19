@@ -1,3 +1,6 @@
+import opgave.Node;
+import opgave.OptimizableTree;
+import opgave.SearchTree;
 import oplossing.OptimalTree;
 import org.junit.jupiter.api.Test;
 
@@ -8,21 +11,95 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class OptimalTreeTest {
 
-    public static void main(String[] args) {
-        OptimalTree<Integer> tree = new OptimalTree<>();
-        ArrayList<Integer> keys = new ArrayList<>(List.of(1, 2, 3, 4, 5));
-        ArrayList<Double> weights = new ArrayList<>(List.of(1.0,2.0,3.0,4.0,5.0));
-        tree.optimize(keys,weights);
-        System.out.println(tree.greatests.length + ", " + tree.greatests[0].length);
-        System.out.println(tree.root().getValue());
-        System.out.println(tree.root().getLeft().getValue());
-        System.out.println(tree.root().getRight().getValue());
-        System.out.println(tree.root().getLeft().getLeft().getValue());
-        System.out.println(tree.root().getRight().getRight().getValue());
+    double treeWeight(SearchTree<Integer> tree, List<Integer> keys, List<Double> internal, List<Double> external) {
+    if (external == null) {
+        external = new ArrayList<>();
+        for (int i = 0; i < keys.size() + 1; i++) {
+            external.add(0d);
+        }
+    }
+    return nodeWeight(tree.root(), keys, internal, external, 1);
+}
+
+    double nodeWeight(Node<Integer> node, List<Integer> keys, List<Double> internal, List<Double> external, int depth) {
+
+        int v = node.getValue();
+        int i = keys.indexOf(v);
+        assert i >= 0;
+
+        // multiply the weight of the key with the current depth
+        double w = depth * internal.get(i);
+
+        if (node.getLeft() == null) {
+            // we count the visited "nodes" as weight, including the NULL pointer
+            w += (depth + 1) * external.get(i);
+        } else {
+            w += nodeWeight(node.getLeft(), keys, internal, external, depth + 1);
+        }
+        if (node.getRight() == null) {
+            w += (depth + 1) * external.get(i + 1);
+        } else {
+            w += nodeWeight(node.getRight(), keys, internal, external, depth + 1);
+        }
+        return w;
     }
 
     @Test
-    public OptimalTree<Integer> randomTree() {
+    public void optimize() {
+        OptimalTree<Integer> tree = new OptimalTree<>();
+        ArrayList<Integer> keys = new ArrayList<>(List.of(10, 20, 30, 40));
+        ArrayList<Double> weights = new ArrayList<>(List.of(4.0, 2.0, 6.0, 3.0));
+        tree.optimize(keys,weights);
+        assertEquals(30, tree.root().getValue());
+        assertEquals(10, tree.root().getLeft().getValue());
+        assertEquals(20, tree.root().getLeft().getRight().getValue());
+        assertEquals(40, tree.root().getRight().getValue());
+    }
+
+    @Test
+    void shouldThrowAwayExisting() {
+        OptimalTree<Integer> tree = new OptimalTree<>();
+        tree.add(1);
+        tree.add(2);
+        tree.add(3);
+        tree.optimize(List.of(4), List.of(1d));
+
+        Iterator<Integer> it = tree.iterator();
+        assertEquals(4, it.next(), "optimize() should throw away any existing nodes");
+        assertFalse(it.hasNext(), "optimize() should throw away any existing nodes");
+    }
+
+    @Test
+    void singleItem() {
+        OptimalTree<Integer> tree = new OptimalTree<>();
+        List<Integer> keys = List.of(1);
+        List<Double> weights = List.of(1d);
+        tree.optimize(keys, weights);
+        assertEquals(1, tree.root().getValue());
+        assertNull(tree.root().getLeft());
+        assertNull(tree.root().getRight());
+
+        assertEquals(1d, treeWeight(tree, keys, weights, null));
+    }
+
+    @Test
+    void twoAscending() {
+        OptimizableTree<Integer> tree = new OptimalTree<>();
+
+        List<Integer> keys = List.of(1, 2);
+        List<Double> weights = List.of(2d, 1d);
+
+        tree.optimize(keys, weights);
+        assertEquals(1, tree.root().getValue());
+        assertEquals(2, tree.root().getRight().getValue());
+
+        assertEquals(4d, treeWeight(tree, keys, weights, null));
+
+        assertEquals(4d, treeWeight(tree, keys, weights, null));
+    }
+
+    @Test
+    public void testRegularOperations() {
         OptimalTree<Integer> tree = new OptimalTree<>();
         ArrayList<Integer> listToAdd = new ArrayList<>(List.of(50, 12, 54, 6, 32, 52, 61, 35, 55, 87));
         for (Integer integer: listToAdd) {
@@ -39,14 +116,6 @@ public class OptimalTreeTest {
         assertEquals(55, tree.root().getRight().getRight().getLeft().getValue());
         assertEquals(87, tree.root().getRight().getRight().getRight().getValue());
         assertEquals(10, tree.size());
-        return tree;
-    }
-
-    @Test
-    public void testRemoveRoot() {
-        OptimalTree<Integer> tree = randomTree();
-        assertEquals(true, tree.remove(50));
-        assertEquals(35, tree.root().getValue());
     }
 
     @Test
