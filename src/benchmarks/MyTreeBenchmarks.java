@@ -2,6 +2,8 @@ package benchmarks;
 
 import opgave.samplers.Sampler;
 import oplossing.MyTree;
+import oplossing.SemiSplayTree;
+
 import java.util.List;
 import java.util.Random;
 
@@ -21,7 +23,7 @@ public class MyTreeBenchmarks {
         }
         long stop = System.currentTimeMillis();
         System.out.println("Tijd van toevoegen van " + amount + " elementen: " + (stop - start) + " ms.");
-        //System.out.println("Aantal bezochte toppen bij toevoegen van " + amount + " elementen: " + tree.getNodesVisited());
+        System.out.println("Aantal bezochte toppen bij toevoegen van " + amount + " elementen: " + tree.getNodesVisited());
     }
 
     public void removeElements(int amount) {
@@ -48,35 +50,63 @@ public class MyTreeBenchmarks {
         System.out.println("Aantal bezochte toppen bij opzoeken van " + amount + " elementen: " + tree.getNodesVisited());
     }
 
+    public void addIncreasingNumbers(int amount) {
+        long start = System.currentTimeMillis();
+        for (int i = 0; i < amount; i++) {
+            tree.remove(i);
+        }
+        long stop = System.currentTimeMillis();
+        System.out.println("Tijd van toevoegen van " + amount + " opeenvolgende elementen: " + (stop - start) + " ms.");
+        System.out.println("Aantal bezochte toppen bij toevoegen van " + amount + " opeenvolgende elementen: " + tree.getNodesVisited());
+    }
+
     public static void main(String[] args) {
         MyTreeBenchmarks benchmarks = new MyTreeBenchmarks();
-        benchmarks.addElements(10);
+
+        //Toevoegen, opzoeken en verwijderen van willekeurige sleutels
+        //benchmarks.addElements(10);
         //benchmarks.searchElements(10);
         //benchmarks.removeElements(10);
-        benchmarks.tree = new MyTree<>();
-        benchmarks.addElements(50);
+        //benchmarks.tree = new MyTree<>();
+        //benchmarks.addElements(50);
         //benchmarks.searchElements(50);
         //benchmarks.removeElements(50);
-        benchmarks.tree = new MyTree<>();
-        benchmarks.addElements(100);
+        //benchmarks.tree = new MyTree<>();
+        //benchmarks.addElements(100);
         //benchmarks.searchElements(100);
         //benchmarks.removeElements(100);
-        benchmarks.tree = new MyTree<>();
-        benchmarks.addElements(500);
+        //benchmarks.tree = new MyTree<>();
+        //benchmarks.addElements(500);
         //benchmarks.searchElements(500);
         //benchmarks.removeElements(500);
-        benchmarks.tree = new MyTree<>();
-        benchmarks.addElements(1000);
+        //benchmarks.tree = new MyTree<>();
+        //benchmarks.addElements(1000);
         //benchmarks.searchElements(1000);
         //benchmarks.removeElements(1000);
-        benchmarks.tree = new MyTree<>();
-        benchmarks.addElements(5000);
+        //benchmarks.tree = new MyTree<>();
+        //benchmarks.addElements(5000);
         //benchmarks.searchElements(5000);
         //benchmarks.removeElements(5000);
-        benchmarks.tree = new MyTree<>();
-        benchmarks.addElements(10000);
+        //benchmarks.tree = new MyTree<>();
+        //benchmarks.addElements(10000);
         //benchmarks.searchElements(10000);
         //benchmarks.removeElements(10000);
+        benchmarks.tree = new MyTree<>();
+
+        //Toevoegen van opeenvolgende sleutels
+        //benchmarks.addIncreasingNumbers(10);
+        //benchmarks.tree = new MyTree<>();
+        //benchmarks.addIncreasingNumbers(50);
+        //benchmarks.tree = new MyTree<>();
+        //benchmarks.addIncreasingNumbers(100);
+        //benchmarks.tree = new MyTree<>();
+        //benchmarks.addIncreasingNumbers(500);
+        //benchmarks.tree = new MyTree<>();
+        //benchmarks.addIncreasingNumbers(1000);
+        //benchmarks.tree = new MyTree<>();
+        //benchmarks.addIncreasingNumbers(5000);
+        //benchmarks.tree = new MyTree<>();
+        //benchmarks.addIncreasingNumbers(10000);
         //benchmarks.tree = new MyTree<>();
     }
 }

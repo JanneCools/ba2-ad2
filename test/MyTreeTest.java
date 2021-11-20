@@ -1,4 +1,3 @@
-import opgave.Node;
 import oplossing.MyTree;
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
@@ -15,6 +14,7 @@ public class MyTreeTest {
         MyTree<Integer> tree = new MyTree<>();
         ArrayList<Integer> listToAdd = new ArrayList<>(List.of(55, 50, 61, 32, 54, 87, 35, 12, 52, 6));
         for (Integer integer: listToAdd) {
+            System.out.println(integer);
             tree.add(integer);
         }
         assertEquals(54, tree.root().getValue());
