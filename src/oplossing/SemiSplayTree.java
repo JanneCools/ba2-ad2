@@ -129,6 +129,7 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
             return true;
         }
         boolean present = searcher.searchNode(e, root, false, null).isFound();
+        Node<E> lastNodeOfPath = searcher.getNode();    //Te gebruiken voor semi-splay
         if (! present) {
             nodesVisited += searcher.getNodesVisited();
             Node<E> parent = searcher.getNode();
@@ -139,8 +140,9 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
                 parent.setRight(newNode);
             }
             parents.put(newNode, parent);
-            semiSplay(newNode);
+            lastNodeOfPath = newNode;
         }
+        semiSplay(lastNodeOfPath);
         return ! present;
     }
 

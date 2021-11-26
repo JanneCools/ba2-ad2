@@ -38,40 +38,15 @@ public class OptimalTree<E extends Comparable<E>> implements OptimizableTree<E> 
         }
     }
 
-    // Voor deze methode (en de methode "restructure") heb ik het filmpje gebruikt op de link:
+    // Voor deze methodes (en de methode "restructure") heb ik het filmpje gebruikt op de link:
     // https://www.youtube.com/watch?v=vLS-zRCHo-Y&list=PLPKF_TcxpTJ40Ez42V8DIqm9lECUhb7MB&index=2&t=1264s
     @Override
     public void optimize(List<E> keys, List<Double> weights) {
-        int amount = keys.size();
-        double[][] costs = new double[amount+1][amount+1];
-        int[][] roots = new int[amount+1][amount+1];
-        for (int i = 0; i <= amount; i++) {
-            costs[i][i] = 0;
+        ArrayList<Double> external = new ArrayList<>();
+        for (int i = 0; i <= weights.size(); i++) {
+            external.add(0.0);
         }
-        for (int length = 2; length <= amount+1; length++) {
-            for (int start = 0; start <= amount+1-length; start++) {
-                int stop = start + length - 1;
-                double weight = 0.0;
-                for (int i = start+1; i <= stop; i++) {
-                    if (i != 0) {
-                        weight += weights.get(i-1);
-                    }
-                }
-                double minWeight = costs[0][start] + costs[start+1][stop] + weight;
-                roots[start][stop] = start+1;
-                for (int index = start+1; index <= stop; index++) {
-                    double tempWeight = costs[start][index-1] + costs[index][stop] + weight;
-                    if (tempWeight < minWeight) {
-                        minWeight = tempWeight;
-                        roots[start][stop] = index;
-                    }
-                }
-                costs[start][stop] = minWeight;
-            }
-        }
-        root = null;
-        parents = new HashMap<>();
-        restructure(keys, roots, 0, amount, null);
+        optimize(keys, weights, external);
     }
 
     @Override
@@ -87,10 +62,8 @@ public class OptimalTree<E extends Comparable<E>> implements OptimizableTree<E> 
                 int stop = start + length - 1;
                 double weight = 0.0;
                 for (int i = start+1; i <= stop; i++) {
-                    if (i != 0) {
-                        weight += internalWeights.get(i-1);
-                        weight += externalWeights.get(i-1);
-                    }
+                    weight += internalWeights.get(i-1);
+                    weight += externalWeights.get(i-1);
                 }
                 weight += externalWeights.get(stop);
                 double minWeight = costs[0][start] + costs[start+1][stop] + weight;

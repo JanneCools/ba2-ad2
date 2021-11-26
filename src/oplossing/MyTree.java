@@ -1,7 +1,10 @@
 package oplossing;
 
+import jdk.swing.interop.SwingInterOpUtils;
 import opgave.Node;
 import opgave.SearchTree;
+
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class MyTree<E extends Comparable<E>> implements SearchTree {

@@ -1,3 +1,4 @@
+import jdk.swing.interop.SwingInterOpUtils;
 import org.junit.jupiter.api.Test;
 import oplossing.*;
 
@@ -55,7 +56,9 @@ public class SemiSplayTreeTest {
         assertFalse(tree.search(50));
         assertFalse(tree.search(61));
 
-    }@Test
+    }
+
+    @Test
     public void threeNodes() {
         SemiSplayTree<Integer> tree = new SemiSplayTree<>();
 
@@ -168,7 +171,7 @@ public class SemiSplayTreeTest {
         SemiSplayTree<Integer> tree = new SemiSplayTree<>();
         SortedSet<Integer> inserted = new TreeSet<>();
         Random rng = new Random(2021);
-        for (int i = 0; i < 30; i++) {
+        for (int i = 0; i < 30; i++) { //moet 30 zijn
             int key = rng.nextInt(100);
             tree.add(key);
             inserted.add(key);

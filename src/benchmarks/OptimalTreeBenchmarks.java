@@ -4,8 +4,11 @@ import opgave.samplers.Sampler;
 import oplossing.OptimalTree;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class OptimalTreeBenchmarks {
 
@@ -48,10 +51,10 @@ public class OptimalTreeBenchmarks {
 
     public static void main(String[] args) {
         OptimalTreeBenchmarks benchmarks = new OptimalTreeBenchmarks();
-        benchmarks.optimizeInternal(10);
-        benchmarks.optimizeInternal(50);
-        benchmarks.optimizeInternal(100);
-        benchmarks.optimizeInternal(500);
-        benchmarks.optimizeInternal(1000);
+        //benchmarks.optimizeInternal(10);
+        //benchmarks.optimizeInternal(50);
+        //benchmarks.optimizeInternal(100);
+        //benchmarks.optimizeInternal(500);
+        //benchmarks.optimizeInternal(1000);
     }
 }
