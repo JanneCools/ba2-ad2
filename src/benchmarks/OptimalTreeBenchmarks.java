@@ -51,10 +51,10 @@ public class OptimalTreeBenchmarks {
 
     public static void main(String[] args) {
         OptimalTreeBenchmarks benchmarks = new OptimalTreeBenchmarks();
-        //benchmarks.optimizeInternal(10);
-        //benchmarks.optimizeInternal(50);
-        //benchmarks.optimizeInternal(100);
-        //benchmarks.optimizeInternal(500);
-        //benchmarks.optimizeInternal(1000);
+        benchmarks.optimizeInternal(10);
+        benchmarks.optimizeInternal(50);
+        benchmarks.optimizeInternal(100);
+        benchmarks.optimizeInternal(500);
+        benchmarks.optimizeInternal(1000);
     }
 }

@@ -11,6 +11,18 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class OptimalTreeTest {
 
+    @Test
+    public void test() {
+        OptimalTree<Integer> tree = new OptimalTree<>();
+        ArrayList<Integer> keys = new ArrayList<>(List.of(10, 20, 30, 40));
+        ArrayList<Double> weight = new ArrayList<>(List.of(4.0, 2.0, 6.0, 3.0));
+        tree.optimize(keys, weight);
+        assertEquals(30, tree.root().getValue());
+        assertEquals(10, tree.root().getLeft().getValue());
+        assertEquals(40, tree.root().getRight().getValue());
+        assertEquals(20, tree.root().getLeft().getRight().getValue());
+    }
+
     double treeWeight(SearchTree<Integer> tree, List<Integer> keys, List<Double> internal, List<Double> external) {
     if (external == null) {
         external = new ArrayList<>();
